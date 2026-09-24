@@ -12,6 +12,7 @@ import { NewLogModal } from './components/NewLogModal';
 import { Plant, CareAlert, ActiveTab, HealthLog } from './types/plant';
 import { SEED_PLANTS, INITIAL_ALERTS } from './data/seedPlants';
 import { CheckCircle2, Info, Sprout } from 'lucide-react';
+import { isSoundEnabled, setSoundEnabled, playZenBell } from './utils/audio';
 
 const STORAGE_KEY_PLANTS = 'cuucay_plants_v1';
 const STORAGE_KEY_ALERTS = 'cuucay_alerts_v1';
@@ -66,6 +67,21 @@ export default function App() {
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sound Notification state
+  const [soundEnabled, setSoundEnabledState] = useState<boolean>(() => isSoundEnabled());
+
+  const handleToggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabledState(next);
+    setSoundEnabled(next);
+    if (next) {
+      playZenBell();
+      showToast('Đã bật âm thanh chuông nhắc nhở! 🔔');
+    } else {
+      showToast('Đã tắt âm thanh nhắc nhở.');
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -297,6 +313,8 @@ export default function App() {
             setIsAddModalOpen(true);
           }}
           plantCount={plants.length}
+          soundEnabled={soundEnabled}
+          onToggleSound={handleToggleSound}
         />
 
         {/* Main View Area */}
@@ -329,6 +347,7 @@ export default function App() {
               onSelectPlant={setSelectedPlantId}
               onOpenNewLogModal={() => setIsNewLogModalOpen(true)}
               onDeleteLog={handleDeleteHealthLog}
+              onOpenDoctorTab={() => setActiveTab('ai-doctor')}
             />
           )}
 
@@ -362,6 +381,8 @@ export default function App() {
               onRepotPlant={handleRepotPlant}
               onAddCustomAlert={handleAddCustomAlert}
               onDeleteAlert={handleDeleteAlert}
+              soundEnabled={soundEnabled}
+              onToggleSound={handleToggleSound}
             />
           )}
 

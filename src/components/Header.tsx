@@ -10,7 +10,9 @@ import {
   Plus, 
   ChevronLeft, 
   ChevronRight,
-  Sprout
+  Sprout,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { ActiveTab } from '../types/plant';
 
@@ -20,6 +22,8 @@ interface HeaderProps {
   pendingAlertsCount: number;
   onOpenAddModal: () => void;
   plantCount: number;
+  soundEnabled?: boolean;
+  onToggleSound?: () => void;
 }
 
 interface TabItem {
@@ -36,6 +40,8 @@ export const Header: React.FC<HeaderProps> = ({
   pendingAlertsCount,
   onOpenAddModal,
   plantCount,
+  soundEnabled = true,
+  onToggleSound,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -118,7 +124,22 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Zone 3: Primary Action */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Sound Mute/Unmute Toggle Button */}
+            {onToggleSound && (
+              <button
+                onClick={onToggleSound}
+                title={soundEnabled ? 'Âm thanh thông báo: Đang BẬT (Bấm để tắt)' : 'Âm thanh thông báo: Đang TẮT (Bấm để bật)'}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer border ${
+                  soundEnabled
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                    : 'bg-stone-100 text-stone-400 border-stone-200 hover:bg-stone-200 hover:text-stone-600'
+                }`}
+              >
+                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              </button>
+            )}
+
             <button
               onClick={() => onTabChange('ai-doctor')}
               className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
