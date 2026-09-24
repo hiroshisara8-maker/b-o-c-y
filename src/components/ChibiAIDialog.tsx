@@ -1,6 +1,16 @@
 import React, { useEffect } from 'react';
-import { Plant } from '../types/plant';
-import { X, Sparkles, Stethoscope } from 'lucide-react';
+import { Plant, HealthLog } from '../types/plant';
+import {
+  X,
+  Droplet,
+  Sun,
+  Heart,
+  Sparkles,
+  AlertTriangle,
+  ShieldCheck,
+  Stethoscope,
+  ArrowRight
+} from 'lucide-react';
 import { ChibiPlantAvatar } from './ChibiPlantAvatar';
 
 interface ChibiAIDialogProps {
@@ -9,6 +19,13 @@ interface ChibiAIDialogProps {
   onClose: () => void;
   onOpenDoctorTab?: () => void;
   onOpenNewLogModal?: () => void;
+}
+
+interface CareTip {
+  icon: React.ReactNode;
+  iconBg: string;
+  title: string;
+  desc: string;
 }
 
 export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
@@ -40,26 +57,35 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
   const locationDesc = plant.location || 'trong nhà';
   const waterCycle = plant.waterCycleDays || 4;
   const score = plant.healthScore ?? 85;
-  const latestLog = plant.healthLogs?.[plant.healthLogs.length - 1];
+  const latestLog: HealthLog | undefined = plant.healthLogs?.[plant.healthLogs.length - 1];
 
   let diagnosisText = '';
-  let tips: { icon: string; title: string; desc: string }[] = [];
+  let tips: CareTip[] = [];
 
   if (score >= 80) {
     diagnosisText = `Chào bạn! Mình là ${plantName}. Cảm ơn bạn nhiều lắm, hiện tại mình cảm thấy cực kỳ sảng khoái và tràn đầy năng lượng! Tán lá xanh bóng mượt mà, rễ hô hấp rất tốt trong giá thể ${soilTypeDesc}.`;
     tips = [
       {
-        icon: '🌿',
+        icon: <ShieldCheck className="w-4 h-4 text-emerald-600" />,
+        iconBg: 'bg-emerald-100',
         title: 'Duy trì phong độ',
         desc: `Tiếp tục tưới định kỳ mỗi ${waterCycle} ngày một lần, để đất hơi se khô trước lần tưới kế tiếp.`
       },
       {
-        icon: '☀️',
+        icon: <Sun className="w-4 h-4 text-amber-500" />,
+        iconBg: 'bg-amber-100',
         title: 'Ánh sáng lý tưởng',
         desc: `Vị trí tại ${locationDesc} đang cung cấp đủ ${sunlightDesc} cho mình quang hợp.`
       },
       {
-        icon: '✨',
+        icon: <Droplet className="w-4 h-4 text-sky-500" />,
+        iconBg: 'bg-sky-100',
+        title: 'Cấp ẩm vừa đủ',
+        desc: 'Độ ẩm đất hiện tại rất phù hợp, hãy duy trì nhịp tưới đều đặn và tránh tưới vào buổi trưa nắng gắt.'
+      },
+      {
+        icon: <Sparkles className="w-4 h-4 text-purple-500" />,
+        iconBg: 'bg-purple-100',
         title: 'Mẹo nhỏ từ Bé',
         desc: 'Thỉnh thoảng lau nhẹ bụi bám trên mặt lá bằng khăn ẩm mềm để mình hít thở dễ dàng hơn nhé!'
       }
@@ -68,28 +94,44 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
     diagnosisText = `Chào bạn! Mình là ${plantName}. Sức khỏe của mình đang ở mức khá ổn, nhưng hôm nay mình thấy hơi khát nước hoặc vị trí hiện tại đang hơi thiếu sáng một chút đó!`;
     tips = [
       {
-        icon: '💧',
+        icon: <Droplet className="w-4 h-4 text-sky-500" />,
+        iconBg: 'bg-sky-100',
         title: 'Kiểm tra độ ẩm đất',
         desc: 'Cắm ngón tay khoảng 2 đốt xuống đất, nếu thấy đất khô ráo thì hãy tưới đẫm nước cho mình nhé!'
       },
       {
-        icon: '🌤️',
+        icon: <Sun className="w-4 h-4 text-amber-500" />,
+        iconBg: 'bg-amber-100',
         title: 'Điều chỉnh ánh sáng',
         desc: `Mình thích ${sunlightDesc}, hãy tránh để nắng gắt buổi trưa chiếu thẳng vào lá gây cháy nhé.`
+      },
+      {
+        icon: <ShieldCheck className="w-4 h-4 text-emerald-600" />,
+        iconBg: 'bg-emerald-100',
+        title: 'Bảo vệ bộ rễ',
+        desc: 'Đảm bảo khay hứng nước không bị tù đọng sau khi tưới để rễ cây không bị ngộp thở.'
       }
     ];
   } else {
     diagnosisText = `Ôi bạn ơi! Mình cảm thấy rất mệt... Tình trạng sức khỏe của mình đang ở mức báo động (${score}%). Lá mình có dấu hiệu vàng rũ, hoặc rễ đang bị ngạt úng do đọng nước quá lâu!`;
     tips = [
       {
-        icon: '🚨',
+        icon: <AlertTriangle className="w-4 h-4 text-rose-600" />,
+        iconBg: 'bg-rose-100',
         title: 'Cần kiểm tra rễ khẩn cấp',
         desc: 'Kiểm tra lỗ thoát nước đáy chậu xem có bị bít tắc không. Nếu đất ngập sũng, tạm ngừng tưới ngay!'
       },
       {
-        icon: '🩺',
+        icon: <Stethoscope className="w-4 h-4 text-amber-700" />,
+        iconBg: 'bg-amber-100',
         title: 'Hỏi Bác Sĩ Cây Trồng AI',
         desc: 'Chụp ảnh lá hoặc thân cây và gửi vào mục "Bác Sĩ AI" để nhận phác đồ cấp cứu kịp thời!'
+      },
+      {
+        icon: <Droplet className="w-4 h-4 text-sky-600" />,
+        iconBg: 'bg-sky-100',
+        title: 'Điều tiết nước tưới',
+        desc: 'Chỉ tưới khi mặt đất se khô hoàn toàn. Hãy xới nhẹ bề mặt đất để thông thoáng khí.'
       }
     ];
   }
@@ -135,7 +177,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
               {plantName}
             </h2>
             <span
-              className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
                 score >= 80
                   ? 'bg-emerald-100 text-emerald-800'
                   : score >= 50
@@ -143,12 +185,20 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
                   : 'bg-rose-100 text-rose-800'
               }`}
             >
-              {score}% Sức Khỏe
+              <Heart className="w-3 h-3 fill-current" />
+              <span>{score}% Sức Khỏe</span>
             </span>
           </div>
           <p className="text-xs text-stone-500 mt-0.5 italic">
             {plantSpecies}
           </p>
+
+          {/* Latest health log highlight if available */}
+          {latestLog && (
+            <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-stone-500 bg-stone-50 px-2 py-0.5 rounded-md border border-stone-200">
+              <span>Tuần {latestLog.weekNumber}: {latestLog.condition} ({latestLog.moisturePercent}% ẩm)</span>
+            </div>
+          )}
         </div>
 
         {/* Voice of the Plant */}
@@ -170,7 +220,9 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
               key={idx}
               className="p-3 bg-stone-50 border border-stone-200 rounded-xl flex items-start gap-2.5 text-xs"
             >
-              <span className="text-base shrink-0">{tip.icon}</span>
+              <div className={`w-7 h-7 rounded-lg ${tip.iconBg} flex items-center justify-center shrink-0`}>
+                {tip.icon}
+              </div>
               <div>
                 <span className="font-bold text-stone-900 block">{tip.title}</span>
                 <span className="text-stone-600 mt-0.5 block">{tip.desc}</span>
@@ -188,9 +240,10 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
                 onClose();
                 onOpenNewLogModal();
               }}
-              className="flex-1 py-2.5 px-3 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors text-center cursor-pointer"
+              className="flex-1 py-2.5 px-3 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5"
             >
-              📸 Ghi Nhật Ký Ảnh Mới
+              <span>📸 Ghi Nhật Ký Ảnh</span>
+              <ArrowRight className="w-3.5 h-3.5 opacity-80" />
             </button>
           )}
 
@@ -201,10 +254,11 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
                 onClose();
                 onOpenDoctorTab();
               }}
-              className="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              className="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Stethoscope className="w-3.5 h-3.5 text-amber-700" />
               <span>Hỏi Bác Sĩ AI</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-700 opacity-80" />
             </button>
           )}
 
