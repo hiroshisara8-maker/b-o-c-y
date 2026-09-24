@@ -1,0 +1,7 @@
+{
+  "name": "Cứu Cây",
+  "description": "Ứng dụng theo dõi tình trạng, phát hiện sớm vấn đề và xây dựng kế hoạch chăm sóc cây trồng chuyên sâu cùng AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
