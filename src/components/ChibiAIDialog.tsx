@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Plant, HealthLog } from '../types/plant';
 import { X, Droplet, Sun, Heart, Sparkles, AlertTriangle, ShieldCheck, Stethoscope, ArrowRight } from 'lucide-react';
 import { ChibiPlantAvatar } from './ChibiPlantAvatar';
@@ -18,6 +18,18 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
   onOpenDoctorTab,
   onOpenNewLogModal,
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !plant) return null;
 
   const score = plant.healthScore ?? 85;
@@ -76,14 +88,23 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 my-8 animate-fadeIn relative">
-        {/* Close Button */}
+        {/* Close Button Top Right */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:text-stone-800 hover:bg-stone-200 flex items-center justify-center transition-colors cursor-pointer"
+          className="absolute right-4 top-4 px-2.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-900 flex items-center gap-1 text-xs font-semibold transition-colors cursor-pointer"
+          title="Tắt xem mục này (Esc)"
         >
           <X className="w-4 h-4" />
+          <span>Tắt</span>
         </button>
 
         {/* Header with Chibi AI Character */}
@@ -155,7 +176,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
                 onClose();
                 onOpenNewLogModal();
               }}
-              className="flex-1 py-2.5 px-3 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors text-center"
+              className="flex-1 py-2.5 px-3 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors text-center cursor-pointer"
             >
               📸 Ghi Nhật Ký Ảnh Mới
             </button>
@@ -167,12 +188,22 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
                 onClose();
                 onOpenDoctorTab();
               }}
-              className="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1"
+              className="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
             >
               <Stethoscope className="w-3.5 h-3.5 text-amber-700" />
               <span>Hỏi Bác Sĩ AI</span>
             </button>
           )}
+
+          {/* Explicit Close / Tắt Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="py-2.5 px-4 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors text-center cursor-pointer flex items-center justify-center gap-1"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Tắt xem</span>
+          </button>
         </div>
       </div>
     </div>
