@@ -25,8 +25,10 @@ export const ChibiPlantAvatar: React.FC<ChibiPlantAvatarProps> = ({
   const [isWiggling, setIsWiggling] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  const healthScore = plant.healthScore ?? 85;
-  const status = plant.status || (healthScore >= 80 ? 'healthy' : healthScore >= 50 ? 'warning' : 'critical');
+  const healthScore = plant?.healthScore ?? 85;
+  const safeId = plant?.id ? plant.id.replace(/[^a-zA-Z0-9_-]/g, '_') : 'plant-default';
+  const plantName = plant?.name || 'Bé Cây';
+  const status = plant?.status || (healthScore >= 80 ? 'healthy' : healthScore >= 50 ? 'warning' : 'critical');
 
   // Determine emotional state and quotes
   let mood: 'happy' | 'cheerful' | 'thirsty' | 'sick' = 'happy';
@@ -125,29 +127,29 @@ export const ChibiPlantAvatar: React.FC<ChibiPlantAvatarProps> = ({
         className={`relative ${dimensions.box} cursor-pointer select-none transition-transform duration-300 ${
           isWiggling ? 'animate-bounce scale-110' : 'hover:scale-105'
         }`}
-        title={`Bé ${plant.name}: ${healthScore}% Sức khỏe - Nhấp để tương tác`}
+        title={`Bé ${plantName}: ${healthScore}% Sức khỏe - Nhấp để tương tác`}
       >
         <svg
           viewBox="0 0 120 120"
           className="w-full h-full drop-shadow-md overflow-visible"
         >
           <defs>
-            <radialGradient id={`glow-${plant.id}`} cx="50%" cy="50%" r="50%">
+            <radialGradient id={`glow-${safeId}`} cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
               <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
             </radialGradient>
-            <linearGradient id={`leafGrad-${plant.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id={`leafGrad-${safeId}`} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={mood === 'sick' ? '#eab308' : mood === 'thirsty' ? '#84cc16' : '#22c55e'} />
               <stop offset="100%" stopColor={mood === 'sick' ? '#ca8a04' : mood === 'thirsty' ? '#4d7c0f' : '#15803d'} />
             </linearGradient>
-            <linearGradient id={`potGrad-${plant.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id={`potGrad-${safeId}`} x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#f97316" />
               <stop offset="100%" stopColor="#c2410c" />
             </linearGradient>
           </defs>
 
           {/* Background Aura */}
-          <circle cx="60" cy="60" r="54" fill={`url(#glow-${plant.id})`} />
+          <circle cx="60" cy="60" r="54" fill={`url(#glow-${safeId})`} />
 
           {/* Sparkles / Particles for happy state */}
           {mood === 'happy' && (

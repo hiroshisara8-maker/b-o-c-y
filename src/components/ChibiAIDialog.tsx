@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Plant, HealthLog } from '../types/plant';
-import { X, Droplet, Sun, Heart, Sparkles, AlertTriangle, ShieldCheck, Stethoscope, ArrowRight } from 'lucide-react';
+import { Plant } from '../types/plant';
+import { X, Sparkles, Stethoscope } from 'lucide-react';
 import { ChibiPlantAvatar } from './ChibiPlantAvatar';
 
 interface ChibiAIDialogProps {
@@ -32,6 +32,13 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
 
   if (!isOpen || !plant) return null;
 
+  // Safe fallback extractions to prevent undefined.toLowerCase() crashes
+  const plantName = plant.name || 'Bé Cây';
+  const plantSpecies = plant.species || 'Cây cảnh trong nhà';
+  const soilTypeDesc = (plant.soilType || 'đất hữu cơ tơi xốp').toLowerCase();
+  const sunlightDesc = (plant.sunlight || 'ánh sáng gián tiếp').toLowerCase();
+  const locationDesc = plant.location || 'trong nhà';
+  const waterCycle = plant.waterCycleDays || 4;
   const score = plant.healthScore ?? 85;
   const latestLog = plant.healthLogs?.[plant.healthLogs.length - 1];
 
@@ -39,17 +46,17 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
   let tips: { icon: string; title: string; desc: string }[] = [];
 
   if (score >= 80) {
-    diagnosisText = `Chào bạn! Mình là ${plant.name}. Cảm ơn bạn nhiều lắm, hiện tại mình cảm thấy cực kỳ sảng khoái và tràn đầy năng lượng! Tán lá xanh bóng mượt mà, rễ hô hấp rất tốt trong giá thể ${plant.soilType.toLowerCase()}.`;
+    diagnosisText = `Chào bạn! Mình là ${plantName}. Cảm ơn bạn nhiều lắm, hiện tại mình cảm thấy cực kỳ sảng khoái và tràn đầy năng lượng! Tán lá xanh bóng mượt mà, rễ hô hấp rất tốt trong giá thể ${soilTypeDesc}.`;
     tips = [
       {
         icon: '🌿',
         title: 'Duy trì phong độ',
-        desc: `Tiếp tục tưới định kỳ mỗi ${plant.waterCycleDays} ngày một lần, để đất hơi se khô trước lần tưới kế tiếp.`
+        desc: `Tiếp tục tưới định kỳ mỗi ${waterCycle} ngày một lần, để đất hơi se khô trước lần tưới kế tiếp.`
       },
       {
         icon: '☀️',
         title: 'Ánh sáng lý tưởng',
-        desc: `Vị trí tại ${plant.location} đang cung cấp đủ ${plant.sunlight.toLowerCase()} cho mình quang hợp.`
+        desc: `Vị trí tại ${locationDesc} đang cung cấp đủ ${sunlightDesc} cho mình quang hợp.`
       },
       {
         icon: '✨',
@@ -58,7 +65,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
       }
     ];
   } else if (score >= 60) {
-    diagnosisText = `Chào bạn! Mình là ${plant.name}. Sức khỏe của mình đang ở mức khá ổn, nhưng hôm nay mình thấy hơi khát nước hoặc vị trí hiện tại đang hơi thiếu sáng một chút đó!`;
+    diagnosisText = `Chào bạn! Mình là ${plantName}. Sức khỏe của mình đang ở mức khá ổn, nhưng hôm nay mình thấy hơi khát nước hoặc vị trí hiện tại đang hơi thiếu sáng một chút đó!`;
     tips = [
       {
         icon: '💧',
@@ -68,7 +75,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
       {
         icon: '🌤️',
         title: 'Điều chỉnh ánh sáng',
-        desc: `Mình thích ${plant.sunlight.toLowerCase()}, hãy tránh để nắng gắt buổi trưa chiếu thẳng vào lá gây cháy nhé.`
+        desc: `Mình thích ${sunlightDesc}, hãy tránh để nắng gắt buổi trưa chiếu thẳng vào lá gây cháy nhé.`
       }
     ];
   } else {
@@ -96,9 +103,13 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
         }
       }}
     >
-      <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 my-8 animate-fadeIn relative">
+      <div
+        className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 my-8 animate-fadeIn relative"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Close Button Top Right */}
         <button
+          type="button"
           onClick={onClose}
           className="absolute right-4 top-4 px-2.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-900 flex items-center gap-1 text-xs font-semibold transition-colors cursor-pointer"
           title="Tắt xem mục này (Esc)"
@@ -121,7 +132,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
 
           <div className="flex items-center justify-center gap-2">
             <h2 className="text-xl font-bold text-stone-900 font-serif-title">
-              {plant.name}
+              {plantName}
             </h2>
             <span
               className={`px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -136,7 +147,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
             </span>
           </div>
           <p className="text-xs text-stone-500 mt-0.5 italic">
-            {plant.species}
+            {plantSpecies}
           </p>
         </div>
 
@@ -172,6 +183,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
         <div className="mt-5 pt-4 border-t border-stone-100 flex flex-col sm:flex-row gap-2">
           {onOpenNewLogModal && (
             <button
+              type="button"
               onClick={() => {
                 onClose();
                 onOpenNewLogModal();
@@ -184,6 +196,7 @@ export const ChibiAIDialog: React.FC<ChibiAIDialogProps> = ({
 
           {score < 70 && onOpenDoctorTab && (
             <button
+              type="button"
               onClick={() => {
                 onClose();
                 onOpenDoctorTab();
